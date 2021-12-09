@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UrbanShop.Data;
 
 namespace UrbanShop
 {
@@ -21,6 +23,8 @@ namespace UrbanShop
             var dbUser = configuration["DB_USER"];
             var dbPassword = configuration["DB_PASSWORD"];
             configuration["AuthConnectionString"] = $"Server={dbHost};Database={dbName};User Id={dbUser};Password={dbPassword}";
+
+            Console.WriteLine(Configuration.GetConnectionString("ShopContext"));
         }
 
         public IConfiguration Configuration { get; }
@@ -29,6 +33,10 @@ namespace UrbanShop
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
+            services.AddDbContext<ShopContext>(config => config.UseSqlServer(Configuration["AuthConnectionString"]));
+
+            services.AddDatabaseDeveloperPageExceptionFilter();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
