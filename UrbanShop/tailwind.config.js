@@ -8,10 +8,18 @@ module.exports = {
   },
   darkMode: false, // or 'media' or 'class'
   theme: {
-    extend: {},
+      extend: {
+          width: {
+              "1/5": "20%",
+              "23/100": "23%",
+              "24/100": "24%",
+          }
+      },
   },
   variants: {
     extend: {},
   },
-  plugins: [],
+    plugins: [
+        require('@tailwindcss/forms'),
+    ],
 }
