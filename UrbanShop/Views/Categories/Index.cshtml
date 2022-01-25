@@ -1,0 +1,57 @@
+﻿@model IEnumerable<UrbanShop.Models.Category>
+
+@{
+    ViewData["Title"] = "Category - Index";
+}
+
+<div class="w-full text-center py-6">
+    <div class="text-2xl text-center mx-auto inline-block">Categories</div>
+    <div class="container mx-auto py-6 flex flex-row gap-4 justify-center items-center">
+        <vc:asp-route-btn controller="Categories" action="Create" wrap-class="create-btn" btn-text="Create" />
+    </div>
+
+    <form method="GET" class="my-6">
+        <div class="w-full sm:w-1/2 mx-auto flex flex-row justify-center items-center">
+            <input type="text" name="searchInput" autocomplete="off" class="m-2 w-1/2 md:w-1/4 p-2 border border-gray-300 focus:border-gray-500 focus:ring-gray-500 rounded-md focus:outline-none block shadow-sm sm:text-sm" placeholder="Filter by Name" />
+            <button type="submit" class="my-2 py-2 px-6 inline-block border border-black">Search</button>
+        </div>
+    </form>
+
+    <table class="table-auto md:p-6  mx-auto border-separate border border-gray-600">
+        <thead>
+            <tr>
+                <th class="bg-gray-300 border border-gray-600">
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th class="bg-gray-300 border border-gray-600">
+                    @Html.DisplayNameFor(model => model.DisplayName)
+                </th>
+                <th class="bg-gray-300 border border-gray-600">
+                    @Html.DisplayNameFor(model => model.IsVisible)
+                </th>
+                <th class="bg-gray-300 border border-gray-600">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DisplayName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsVisible)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
