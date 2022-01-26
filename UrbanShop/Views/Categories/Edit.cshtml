@@ -17,6 +17,7 @@
             <div class="sm:w-1/2 border border-gray-300 border-opacity-40 sm:shadow-lg sm:rounded-sm mx-auto">
                 <div class="p-4 sm:p-16">
                     <div asp-validation-summary="ModelOnly" class="text-red-500"></div>
+                    <input type="hidden" asp-for="Id" />
                     <div class="">
                         <label asp-for="Name" class="block w-11/12 sm:w-1/2 mx-auto font-bold text-gray-700"></label>
                         <input asp-for="Name" autocomplete="off" class="m-2 p-2 sm:mx-auto border border-gray-300 focus:border-gray-500 focus:ring-gray-500 rounded-md focus:outline-none block w-11/12 sm:w-1/2 shadow-sm sm:text-sm" />
