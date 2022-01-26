@@ -32,6 +32,7 @@ namespace UrbanShop.Controllers
         }
 
         // TODO authentication
+        [Route("/admin/")]
         public IActionResult AdminPanel()
         {
             return View();
