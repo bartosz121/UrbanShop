@@ -24,7 +24,9 @@ namespace UrbanShop.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var products = await _context.Products.Include(p => p.ProductImages.Take(1)).Take(8).ToListAsync();
+            var products = await _context.Products.Include(p => p.ProductImages.Take(1))
+                .Where(p => p.IsVisible && p.Category.IsVisible)
+                .Take(8).ToListAsync();
 
             return View(products);
         }
