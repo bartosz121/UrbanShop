@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UrbanShop.Data;
+using UrbanShop.Models;
 
 namespace UrbanShop
 {
@@ -36,9 +37,13 @@ namespace UrbanShop
             services.AddControllersWithViews();
             services.AddControllers();
 
-            services.AddDbContext<ShopContext>(config => config.UseSqlServer(Configuration["AuthConnectionString"]));
+            services.AddDefaultIdentity<ShopUser>(options => {
+                options.User.RequireUniqueEmail = true;
+                options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedAccount = false;
+            }).AddEntityFrameworkStores<ShopContext>();
 
-            services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ShopContext>();
+            services.AddDbContext<ShopContext>(config => config.UseSqlServer(Configuration["AuthConnectionString"]));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
