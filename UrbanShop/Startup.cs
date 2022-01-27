@@ -25,8 +25,6 @@ namespace UrbanShop
             var dbUser = configuration["DB_USER"];
             var dbPassword = configuration["DB_PASSWORD"];
             configuration["AuthConnectionString"] = $"Server={dbHost};Database={dbName};User Id={dbUser};Password={dbPassword}";
-
-            Console.WriteLine(Configuration.GetConnectionString("ShopContext"));
         }
 
         public IConfiguration Configuration { get; }
@@ -41,7 +39,7 @@ namespace UrbanShop
                 options.User.RequireUniqueEmail = true;
                 options.SignIn.RequireConfirmedEmail = false;
                 options.SignIn.RequireConfirmedAccount = false;
-            }).AddEntityFrameworkStores<ShopContext>();
+            }).AddRoles<IdentityRole>().AddEntityFrameworkStores<ShopContext>();
 
             services.AddDbContext<ShopContext>(config => config.UseSqlServer(Configuration["AuthConnectionString"]));
 
@@ -50,7 +48,7 @@ namespace UrbanShop
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -77,6 +75,43 @@ namespace UrbanShop
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+            CreateRoles(serviceProvider).Wait();
+        }
+
+        private async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+            var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var UserManager = serviceProvider.GetRequiredService<UserManager<ShopUser>>();
+            string[] roleNames = { "Admin", "ShopUser" };
+            IdentityResult roleResult;
+
+            foreach (var roleName in roleNames)
+            {
+                var roleExist = await RoleManager.RoleExistsAsync(roleName);
+                if (!roleExist)
+                {
+                    roleResult = await RoleManager.CreateAsync(new IdentityRole(roleName));
+                };
+            }
+
+            var adminUser = new ShopUser
+            {
+                UserName = Configuration["ADMIN_USERNAME"],
+                Email = Configuration["ADMIN_EMAIL"],
+            };
+
+            string adminPassword = Configuration["ADMIN_PASSWORD"];
+            var _adminUser = await UserManager.FindByEmailAsync(Configuration["ADMIN_EMAIL"]);
+
+            if(_adminUser == null)
+            {
+                var createAdmin = await UserManager.CreateAsync(adminUser, adminPassword);
+                if (createAdmin.Succeeded)
+                {
+                    await UserManager.AddToRoleAsync(adminUser, "Admin");
+                }
+            }
         }
     }
 }
