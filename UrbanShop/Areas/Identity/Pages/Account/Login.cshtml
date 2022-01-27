@@ -1,0 +1,65 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<div class="container mx-auto">
+    <div class="text-3xl text-center mx-auto">
+        Sign In
+    </div>
+
+    <hr class="my-4" />
+
+    <div class="my-4">
+        <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <div class="sm:w-1/2 border border-gray-300 border-opacity-40 sm:shadow-lg sm:rounded-sm mx-auto">
+                <div class="p-4 sm:p-16">
+                    <div asp-validation-summary="All" class="w-full my-4 text-center font-bold text-red-500"></div>
+                    <div class="form-group">
+                        <label asp-for="Input.Email" class="block w-11/12 sm:w-1/2 mx-auto font-bold text-gray-700"></label>
+                        <input asp-for="Input.Email" class="m-2 p-2 sm:mx-auto border border-gray-300 focus:border-gray-500 focus:ring-gray-500 rounded-md focus:outline-none block w-11/12 sm:w-1/2 shadow-sm sm:text-sm" />
+                        <div class="w-full text-center font-bold">
+                            <span asp-validation-for="Input.Email" class="my-2 text-red-500"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.Password" class="block w-11/12 sm:w-1/2 mx-auto font-bold text-gray-700"></label>
+                        <input asp-for="Input.Password" class="m-2 p-2 sm:mx-auto border border-gray-300 focus:border-gray-500 focus:ring-gray-500 rounded-md focus:outline-none block w-11/12 sm:w-1/2 shadow-sm sm:text-sm" />
+                        <div class="w-full text-center font-bold">
+                            <span asp-validation-for="Input.Password" class="my-2 text-red-500"></span>
+                        </div>
+                    </div>
+                    <div class="my-4 text-center">
+                        <input class="focus:ring-gray-500 h-4 w-4 text-gray-700 border-gray-800 rounded" asp-for="Input.RememberMe" />
+                        <label asp-for="Input.RememberMe" class="font-bold">Remember me</label>
+                    </div>
+                    <div class="w-3/4 py-3 mx-auto">
+                        <button type="submit" class="w-full py-3 uppercase no-underline border border-gray-300 hover:border-gray-500 hover:text-black hover:underline hover:bg-gray-400 hover:bg-opacity-5 transition ease-in-out">Sign In</button>
+                    </div>
+
+                    <hr class="my-4" />
+                    <div class="w-full text-center my-4">
+                        <div class="text-sm flex flex-col justify-center gap-2 transition ease-in-out">
+                            <div id="forgot-password">
+                                <a asp-page="./ForgotPassword" class="inline-block py-2 px-4 no-underline hover:text-black hover:underline">Forgot your password?</a>
+                            </div>
+                            <div>
+                                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="inline-block py-2 px-4 no-underline hover:text-black hover:underline">Register as a new user</a>
+                            </div>
+                            <div>
+                                <a id="resend-confirmation" asp-page="./ResendEmailConfirmation" class="inline-block py-2 px-4 no-underline hover:text-black hover:underline">Resend email confirmation</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,16 @@
+﻿@page
+@inject SignInManager<ShopUser> SignInManager
+@model IndexModel
+@{
+    ViewData["Title"] = "Profile";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+<div class="py-6 text-3xl text-center mx-auto">
+    Welcome @User.Identity.Name! 
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
