@@ -1,0 +1,59 @@
+﻿@model UrbanShop.Models.Product
+
+@{
+    ViewData["Title"] = "Product - Edit";
+}
+
+<div class="container mx-auto">
+    <div class="text-3xl text-center mx-auto">
+        Edit Product
+    </div>
+
+    <hr class="mb-4" />
+
+
+    <div class="my-4">
+        <form asp-action="Edit">
+            <div class="sm:w-1/2 border border-gray-300 border-opacity-40 sm:shadow-lg sm:rounded-sm mx-auto">
+                <div class="p-4 sm:p-16">
+                    <div asp-validation-summary="ModelOnly" class="text-red-500"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <div class="">
+                        <label asp-for="Name" class="block w-11/12 sm:w-3/4 mx-auto font-bold text-gray-700"></label>
+                        <input asp-for="Name" autocomplete="off" class="m-2 p-2 sm:mx-auto border border-gray-300 focus:border-gray-500 focus:ring-gray-500 rounded-md focus:outline-none block w-11/12 sm:w-3/4 shadow-sm sm:text-sm" />
+                        <span asp-validation-for="Name" class="text-red-500"></span>
+                    </div>
+
+                    <div class="">
+                        <label asp-for="CategoryId" class="block w-11/12 sm:w-3/4 mx-auto font-bold text-gray-700">Product category</label>
+                        <select asp-for="CategoryId" asp-items="@ViewBag.categories" class="m-2 p-2 sm:mx-auto border focus:border-gray-500 border-gray-300 rounded-md focus:outline-none block w-11/12 sm:w-3/4 shadow-sm sm:text-sm">
+                            <option>Select Category</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-red-500"></span>
+                    </div>
+                    <div class="">
+                        <label asp-for="Price" class="block w-11/12 sm:w-3/4 mx-auto font-bold text-gray-700"></label>
+                        <input asp-for="Price" autocomplete="off" class="m-2 p-2 sm:mx-auto border focus:border-gray-500 border-gray-300 rounded-md focus:outline-none block w-11/12 sm:w-3/4 shadow-sm sm:text-sm" />
+                        <span asp-validation-for="Price" class="text-red-500"></span>
+                    </div>
+                    <div class="my-4 text-center">
+                        <input class="focus:ring-gray-500 h-4 w-4 text-gray-700 border-gray-300 rounded" asp-for="IsVisible" />
+                        <label asp-for="IsVisible" class="font-bold">Product visible to clients</label>
+
+                    </div>
+                    <div class="pb-4 w-3/4 mx-auto">
+                        <input type="submit" value="Save" class="py-2 px-4 w-full cursor-pointer border border-gray-500 shadow-sm font-medium rounded-md hover:bg-gray-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500" />
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="container mx-auto py-6 flex flex-row gap-4 justify-center items-center">
+        <vc:asp-route-btn controller="Products" action="Index" wrap-class="index-btn" btn-text="Back to List" />
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

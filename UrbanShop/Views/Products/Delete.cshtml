@@ -1,0 +1,43 @@
+﻿@model UrbanShop.Models.Product
+
+@{
+    ViewData["Title"] = "Product - Delete";
+}
+
+<div class="container mx-auto">
+    <div class="text-3xl text-center mx-auto">
+        Delete Product
+    </div>
+
+    <hr class="mb-4" />
+
+
+    <div class="my-4">
+        <div class="sm:w-1/2 border border-gray-300 border-opacity-40 sm:shadow-lg sm:rounded-sm mx-auto">
+            <div class="p-4 sm:p-16 text-center">
+                <div class="mb-4 border-b border-gray-300 border-opacity-40">
+                    <span class="block w-11/12 sm:w-1/2 mx-auto font-bold text-gray-700">@Html.DisplayNameFor(model => model.Name)</span>
+                    <span class="block w-11/12 sm:w-1/2 mx-auto text-gray-700">@Html.DisplayFor(model => model.Name)</span>
+                </div>
+                <div class="mb-4 border-b border-gray-300 border-opacity-40">
+                    <span class="block w-11/12 sm:w-1/2 mx-auto font-bold text-gray-700">@Html.DisplayNameFor(model => model.Price)</span>
+                    <span class="block w-11/12 sm:w-1/2 mx-auto text-gray-700">@Html.DisplayFor(model => model.Price)</span>
+                </div>
+                <div class="mb-4 border-b border-gray-300 border-opacity-40">
+                    <span class="block w-11/12 sm:w-1/2 mx-auto font-bold text-gray-700">@Html.DisplayNameFor(model => model.IsVisible)</span>
+                    <span class="block w-11/12 sm:w-1/2 mx-auto text-gray-700">@Html.DisplayFor(model => model.IsVisible)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mb-4 flex flex-row justify-center gap-4">
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="Id" />
+            <div class="text-black border border-red-500 bg-opacity-40">
+                <input type="submit" value="Delete" class="bg-red-300 inline-block no-underline hover:underline py-2 px-4 uppercase cursor-pointer" />
+            </div>
+        </form>
+        <vc:asp-route-btn controller="Products" action="Index" wrap-class="index-btn" btn-text="Back to List" />
+    </div>
+</div>
