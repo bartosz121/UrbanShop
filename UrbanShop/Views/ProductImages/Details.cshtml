@@ -1,0 +1,38 @@
+﻿@model UrbanShop.Models.ProductImage
+
+@{
+    ViewData["Title"] = "ProductImage - Details";
+}
+
+<div class="container mx-auto">
+    <div class="text-3xl text-center mx-auto">
+        ProductImage Details
+    </div>
+
+    <hr class="mb-4" />
+
+
+    <div class="my-4">
+        <div class="sm:w-1/2 border border-gray-300 border-opacity-40 sm:shadow-lg sm:rounded-sm mx-auto">
+            <div class="p-4 sm:p-16 text-center">
+                <div class="mb-4 border-b border-gray-300 border-opacity-40">
+                    <span class="block w-11/12 sm:w-1/2 mx-auto font-bold text-gray-700">@Html.DisplayNameFor(model => model.Product)</span>
+                    <span class="block w-11/12 sm:w-1/2 mx-auto text-gray-700">@Html.DisplayFor(model => model.Product.Name)</span>
+                </div>
+                <div class="mb-4 border-b border-gray-300 border-opacity-40">
+                    <span class="block w-11/12 sm:w-1/2 mx-auto font-bold text-gray-700">@Html.DisplayNameFor(model => model.ImageUrl)</span>
+                    <span class="block w-11/12 sm:w-1/2 mx-auto text-gray-700">@Html.DisplayFor(model => model.ImageUrl)</span>
+                </div>
+
+                <img src="/product_images/productId_@Model.ProductId/@Model.ImageUrl" />
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mb-4 flex flex-row justify-center gap-4">
+        <div class="border border-gray-300 hover:border-gray-500 transition ease-in-out">
+            <a asp-action="Delete" asp-route-id="@Model.Id" class="inline-block no-underline hover:text-black hover:underline py-2 px-4 uppercase">Go to Delete</a>
+        </div>
+        <vc:asp-route-btn controller="ProductImages" action="Index" wrap-class="index-btn" btn-text="Back to List" />
+    </div>
+</div>
