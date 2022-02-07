@@ -17,7 +17,7 @@
         </div>
     </form>
 
-    <table class="table-auto md:p-6  mx-auto border-separate border border-gray-600">
+    <table class="table-auto md:p-6 mx-auto border-separate border border-gray-600">
         <thead>
             <tr>
                 <th class="bg-gray-300 border border-gray-600">
@@ -36,10 +36,10 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>
+                    <td class="break-all">
                         @Html.DisplayFor(modelItem => item.Name)
                     </td>
-                    <td>
+                    <td class="break-all">
                         @Html.DisplayFor(modelItem => item.DisplayName)
                     </td>
                     <td>
