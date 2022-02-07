@@ -8,7 +8,7 @@ using UrbanShop.Models;
 
 namespace UrbanShop.Data
 {
-    public class ShopContext : IdentityDbContext
+    public class ShopContext : IdentityDbContext<ShopUser>
     {
         public DbSet<Category> Categories { get; set; }
 
