@@ -19,7 +19,7 @@ namespace UrbanShop.Models
         [MaxLength(80)]
         public string DisplayName { get; set; }
 
-        public ICollection<Product> Products { get; set; }
+        public List<Product> Products { get; set; } = new List<Product>();
 
         [Required]
         public bool IsVisible { get; set; }
