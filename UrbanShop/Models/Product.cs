@@ -27,6 +27,37 @@ namespace UrbanShop.Models
 
         [Required]
         public bool IsVisible { get; set; }
+
+        public string GetThumbnailUrl()
+        {
+            string thumbnailUrl = "/product_images/default.jpg";
+
+            if (ProductImages.Count > 0) {
+                thumbnailUrl = $"/product_images/productId_{Id}/{ProductImages[0].ImageUrl}";
+            }
+
+            return thumbnailUrl;
+        }
+
+        public List<string> GetImagesUrls()
+        {
+            List<string> result = new List<string>();
+
+            if(ProductImages.Count < 1)
+            {
+                result.Add("/product_images/default.jpg");
+                return result;
+            }
+
+            foreach (var img in ProductImages)
+            {
+                result.Add($"/product_images/productId_{Id}/{img.ImageUrl}");
+            }
+
+            result.Reverse();
+
+            return result;
+        }
     }
 
 }
