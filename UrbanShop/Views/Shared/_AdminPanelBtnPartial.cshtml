@@ -1,0 +1,9 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ShopUser> SignInManager
+
+@if (User.IsInRole("Admin"))
+    {
+        <div class="admin-menu container mx-auto py-6 flex flex-row gap-4 justify-center items-center">
+            <vc:asp-route-btn controller="Home" action="AdminPanel" wrap-class="admin-menu" btn-text="Admin Panel" />
+        </div>
+    }
