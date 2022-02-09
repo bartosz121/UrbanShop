@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Admin Panel";
+}
+
+<div>
+    <div class="w-full text-center">
+        <h1 class="text-3xl uppercase">Admin Panel</h1>
+        <div class="menu my-4 flex flex-col sm:flex-row justify-center gap-6">
+            <vc:asp-route-btn controller="Categories" action="Index" wrap-class="admin-menu-item" btn-text="Categories" />
+            <vc:asp-route-btn controller="Products" action="Index" wrap-class="admin-menu-item" btn-text="Products" />
+            <vc:asp-route-btn controller="ProductImages" action="Index" wrap-class="admin-menu-item" btn-text="Products Images" />
+        </div>
+    </div>
+</div>
