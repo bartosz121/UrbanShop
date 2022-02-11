@@ -19,5 +19,7 @@ namespace UrbanShop.Data
         public ShopContext(DbContextOptions<ShopContext> options) : base(options)
         {
         }
+
+        public DbSet<CartItem> CartItem { get; set; }
     }
 }
