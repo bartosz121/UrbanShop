@@ -3,10 +3,7 @@
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }
 
-<div class="w-full uppercase flex flex-row justify-around items-center transition ease-in-out">
-    <div class="@ManageNavPages.IndexNavClass(ViewContext) px-4 py-2 no-underline border border-gray-300 hover:border-gray-500 hover:text-black hover:underline hover:bg-gray-400 hover:bg-opacity-5">
-        <a id="profile" asp-page="./Index">Address TODO</a>
-    </div>
+<div class="w-full uppercase flex flex-row justify-evenly items-center transition ease-in-out">
     <div class="@ManageNavPages.EmailNavClass(ViewContext) px-4 py-2 no-underline border border-gray-300 hover:border-gray-500 hover:text-black hover:underline hover:bg-gray-400 hover:bg-opacity-5">
         <a id="email" asp-page="./Email">Email</a>
     </div>
