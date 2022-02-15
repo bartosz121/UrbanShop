@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UrbanShop.Data;
 using UrbanShop.Models;
+using Stripe;
 
 namespace UrbanShop
 {
@@ -50,6 +51,9 @@ namespace UrbanShop
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
+
+            StripeConfiguration.ApiKey = Configuration["STRIPE_KEY"];
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
