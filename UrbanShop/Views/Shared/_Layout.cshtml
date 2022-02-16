@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ShopUser> signInManager
+@inject UserManager<ShopUser> userManager
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -8,14 +12,173 @@
     <title>UrbanShop - @ViewData["Title"]</title>
 
     <link rel="stylesheet" href="~/css/output.css" />
+    <link rel="stylesheet" href="~/css/toastr/toastr.min.css" />
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:200,400&display=swap" rel="stylesheet">
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/toastr/toastr.min.js"></script>
+    <script src="~/lib/alpine/alpine.min.js" defer></script>
+    <script defer>
+        var isSignedIn = false;
+
+        @if (signInManager.IsSignedIn(User)) {
+            @:isSignedIn = true;
+        }
+
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('cart', {
+                items: [],
+                itemCount: 0,
+
+                async init() {
+                    if (isSignedIn) {
+                        try {
+                            userCart = await this.getUserCart()
+                            this.items = userCart
+                            this.itemCount = this.items.length
+                        } catch (err) {
+                            toastr.error(err)
+                        }
+                    }
+                },
+
+                async getUserCart() {
+                    const response = await fetch("/api/cart/user/@userManager.GetUserId(User)")
+                    if (response.ok) {
+                        data = await response.json()
+                        return data
+                    }
+                    throw new Error("Could not get your cart data.")
+                },
+
+                getPriceTotal() {
+                    let price = 0;
+                    this.items.forEach(i => price += i.totalPrice)
+
+                    return Number.parseFloat(price).toFixed(2)
+                },
+
+                async addItem(itemToAdd) {
+                    if (isSignedIn) {
+                        response = await fetch("/api/cart/", {
+                            method: "POST",
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                "UserId": '@userManager.GetUserId(User)',
+                                "ProductId": itemToAdd.productId,
+                                "Quantity": itemToAdd.quantity
+                            })
+                        })
+                        if (response.ok) {
+                            try {
+                                userCart = await this.getUserCart()
+                                this.items = userCart
+                                this.itemCount = this.items.length
+                                toastr.success(`${itemToAdd.productName} x${itemToAdd.quantity} added to cart!`)
+                            } catch (err) {
+                                toastr.error(err)
+                            }
+                        } else {
+                            toastr.error("Error adding product to cart.")
+                        }
+                    } else {
+                        window.location = `/Identity/Account/Login?ReturnUrl=/Shop/Product/${itemToAdd.productId}`
+                    }
+                },
+
+                async removeItem(productId) {
+                    if (isSignedIn) {
+                        item = this.items.find(i => i.productId === productId)
+                        response = await fetch(`/api/cart/${item.id}`, {
+                            method: 'DELETE'
+                        })
+
+                        if (response.ok) {
+                            try {
+                                userCart = await this.getUserCart()
+                                toastr.info(`${item.productName} removed from cart.`)
+                                this.items = userCart
+                                this.itemCount = this.items.length
+                            } catch (err) {
+                                toastr.error(err)
+                            }
+                        } else {
+                            toastr.error(`Error removing ${item.productName}(x${item.quantity}) from cart.`)
+                        }
+                    }
+                },
+
+                // Add/Remove one quantity of item
+                async updateQuantity(productId, remove=false) {
+                    if (isSignedIn) {
+                        item = this.items.find(i => i.productId === productId)
+
+                        newQuantity = item.quantity + 1
+
+                        if (remove) {
+                            newQuantity = item.quantity - 1
+                            if (newQuantity === 0) {
+                                this.removeItem(productId)
+                                return;
+                            }
+                        }
+
+                        response = await fetch(`/api/cart/${item.id}`, {
+                            method: "PUT",
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                "Id":item.id,
+                                "UserId": '@userManager.GetUserId(User)',
+                                "ProductId": item.productId,
+                                "Quantity": newQuantity
+                            })
+                        })
+                        if (response.ok) {
+                            try {
+                                userCart = await this.getUserCart()
+                                this.items = userCart
+                                this.itemCount = this.items.length
+                            } catch (err) {
+                                toastr.error(err)
+                            }
+                        } else {
+                            toastr.error(`Error removing ${item.productName}(x1) from cart.`)
+                        }
+                    }
+                },
+
+                async clearCart(alert = false) {
+                    if (isSignedIn) {
+                        for (let i = 0; i < this.items.length; i++) {
+                            item = this.items[i]
+                            await this.removeItem(i.productId)
+                        }
+
+                        try {
+                            userCart = await this.getUserCart()
+                            this.items = userCart
+                            this.itemCount = this.items.length
+                        } catch (err) {
+                            toastr.error(err)
+                        }
+
+                        if (alert) {
+                            toastr.info('Your cart has been cleared.')
+                        }
+                    }
+                },
+            })
+        })
+
+    </script>
 </head>
 <body class="bg-white text-gray-600 work-sans leading-normal text-base tracking-normal">
-
     <!--Nav-->
     <nav id="header" class="w-full z-30 top-0 py-1">
-        <div class="w-full container mx-auto flex flex-wrap items-center justify-between mt-0 px-6 py-3">
+        <div class="w-full container mx-auto flex flex-wrap items-center justify-around md:justify-between mt-0 px-6 py-3">
 
             <label for="menu-toggle" class="cursor-pointer md:hidden block">
                 <svg class="fill-current text-gray-900" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
@@ -25,7 +188,7 @@
             </label>
             <input class="hidden" type="checkbox" id="menu-toggle" />
 
-            <div class="hidden md:flex md:items-center md:w-auto w-full order-3 md:order-2" id="menu">
+            <div class="hidden md:flex md:items-center md:w-auto w-full" id="menu">
                 <nav>
                     <ul class="md:flex items-center justify-between text-base text-gray-700 pt-4 md:pt-0">
                         <li><a asp-controller="Home" asp-action="Index" class="inline-block no-underline hover:text-black hover:underline py-2 px-4">Shop</a></li>
@@ -44,36 +207,50 @@
                     URBANSHOP
                 </a>
             </div>
+            @if (signInManager.IsSignedIn(User))
+            {
+                <div x-data="{ openAccDropdown: false, openCartDropdown: false }" class="relative order-2 md:order-3 flex items-center justify-center" id="nav-content">
+                    <div class="account-btn ">
+                        <div x-on:click="openAccDropdown = !openAccDropdown" class="inline-block no-underline hover:text-black cursor-pointer">
+                            <svg class="fill-current hover:text-black" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <circle fill="none" cx="12" cy="7" r="3" />
+                                <path d="M12 2C9.243 2 7 4.243 7 7s2.243 5 5 5 5-2.243 5-5S14.757 2 12 2zM12 10c-1.654 0-3-1.346-3-3s1.346-3 3-3 3 1.346 3 3S13.654 10 12 10zM21 21v-1c0-3.859-3.141-7-7-7h-4c-3.86 0-7 3.141-7 7v1h2v-1c0-2.757 2.243-5 5-5h4c2.757 0 5 2.243 5 5v1H21z" />
+                            </svg>
+                        </div>
+                        <div x-show="openAccDropdown" x-on:click.outside="openAccDropdown = false" x-transition.duration.300ms class="absolute right-2 md:right-6 bg-white border border-gray-300 border-opacity-30 text-base z-50 list-none divide-y divide-gray-100 rounded shadow-md my-4" id="dropdownAcc">
+                            <partial name="_LoginPartial" />
+                        </div>
+                    </div>
 
-            <div class="order-2 md:order-3 flex items-center" id="nav-content">
-
-                <a class="inline-block no-underline hover:text-black" href="#">
-                    <svg class="fill-current hover:text-black" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                        <circle fill="none" cx="12" cy="7" r="3" />
-                        <path d="M12 2C9.243 2 7 4.243 7 7s2.243 5 5 5 5-2.243 5-5S14.757 2 12 2zM12 10c-1.654 0-3-1.346-3-3s1.346-3 3-3 3 1.346 3 3S13.654 10 12 10zM21 21v-1c0-3.859-3.141-7-7-7h-4c-3.86 0-7 3.141-7 7v1h2v-1c0-2.757 2.243-5 5-5h4c2.757 0 5 2.243 5 5v1H21z" />
-                    </svg>
-                </a>
-
-                <a class="pl-3 inline-block no-underline hover:text-black" href="#">
-                    <svg class="fill-current hover:text-black" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                        <path d="M21,7H7.462L5.91,3.586C5.748,3.229,5.392,3,5,3H2v2h2.356L9.09,15.414C9.252,15.771,9.608,16,10,16h8 c0.4,0,0.762-0.238,0.919-0.606l3-7c0.133-0.309,0.101-0.663-0.084-0.944C21.649,7.169,21.336,7,21,7z M17.341,14h-6.697L8.371,9 h11.112L17.341,14z" />
-                        <circle cx="10.5" cy="18.5" r="1.5" />
-                        <circle cx="17.5" cy="18.5" r="1.5" />
-                    </svg>
-                </a>
-
-            </div>
+                    <div x-on:click="window.location='/Shop/Cart'" x-on:mouseover="openCartDropdown = true" x-on:mouseover.away="openCartDropdown = false" class="cart-btn bg-white cursor-pointer">
+                        <div class="flex flex-row-reverse ml-2 w-full">
+                            <div slot="icon" class="relative">
+                                <div x-text="$store.cart.itemCount" class="absolute text-xs rounded-full mt-4 -mr-2 md:-mr-3 px-1 font-bold top-0 right-0 bg-gray-700 text-white"></div>
+                                <svg class="fill-current hover:text-black" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                    <path d="M21,7H7.462L5.91,3.586C5.748,3.229,5.392,3,5,3H2v2h2.356L9.09,15.414C9.252,15.771,9.608,16,10,16h8 c0.4,0,0.762-0.238,0.919-0.606l3-7c0.133-0.309,0.101-0.663-0.084-0.944C21.649,7.169,21.336,7,21,7z M17.341,14h-6.697L8.371,9 h11.112L17.341,14z" />
+                                    <circle cx="10.5" cy="18.5" r="1.5" />
+                                    <circle cx="17.5" cy="18.5" r="1.5" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div x-show="openCartDropdown" x-transition.duration.300ms class="absolute right-0 bg-white border border-gray-300 border-opacity-30 z-50 rounded shadow-md" id="dropdownCart">
+                            <partial name="_CartDropDownPartial" />
+                        </div>
+                    </div>
+                </div>
+            } else
+            {
+        <div class="flex flex-row gap-4">
+            <a asp-area="Identity" asp-page="/Account/Login" class="text-gray-700 hover:underline transition ease-in-out">Sign In</a>
+            <a asp-area="Identity" asp-page="/Account/Register" class="text-gray-700 hover:underline transition ease-in-out">Sign Up</a>
+        </div>
+            }
         </div>
     </nav>
 
-    <div class="admin-menu container mx-auto py-6 flex flex-row gap-4 justify-center items-center">
-        <div class="admin-menu-item border border-gray-300">
-            <a asp-controller="Home" asp-action="AdminPanel" class="inline-block no-underline hover:text-black hover:underline py-2 px-4 uppercase">Admin Panel</a>
-        </div>
-    </div>
+    <partial name="_AdminPanelBtnPartial" />
 
     @RenderBody()
-
     <footer class="w-11/12 mx-auto border-t border-gray-600 border-opacity-40 py-16 sm:py-20 md:py-24">
         <div class="w-full mx-auto flex flex-col lg:flex-row items-center justify-around">
             <div class="contact text-center">
@@ -101,7 +278,6 @@
             </div>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
