@@ -1,0 +1,7 @@
+﻿@model UrbanShop.Models.Category
+
+@{
+    ViewData["Title"] = @Model.DisplayName;
+}
+
+<vc:products-list category="@Model" see-more="false" />
