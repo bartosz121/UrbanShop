@@ -1,0 +1,10 @@
+﻿@model IEnumerable<UrbanShop.Models.Category>
+
+@{
+    ViewData["Title"] = "Collections";
+}
+
+@foreach (var category in Model)
+{
+    <vc:products-list category="@category" see-more="true" />
+}
