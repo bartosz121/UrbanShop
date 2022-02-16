@@ -1,0 +1,152 @@
+﻿@{
+    ViewData["Title"] = "Cart";
+}
+
+<section class="bg-white py-8">
+    <main class="my-8">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-row items-center justify-between">
+                <h3 class="text-2xl">Your cart</h3>
+                <svg height="64" width="64" xmlns="http://www.w3.org/2000/svg">
+                    <path xmlns="http://www.w3.org/2000/svg" d="M0 281.296l0 -68.355q1.953 -37.107 29.295 -62.496t64.449 -25.389l93.744 0l0 -31.248q0 -39.06 27.342 -66.402t66.402 -27.342l312.48 0q39.06 0 66.402 27.342t27.342 66.402l0 31.248l93.744 0q37.107 0 64.449 25.389t29.295 62.496l0 68.355q0 25.389 -18.553 43.943t-43.943 18.553l0 531.216q0 52.731 -36.13 88.862t-88.862 36.13l-499.968 0q-52.731 0 -88.862 -36.13t-36.13 -88.862l0 -531.216q-25.389 0 -43.943 -18.553t-18.553 -43.943zm62.496 0l749.952 0l0 -62.496q0 -13.671 -8.789 -22.46t-22.46 -8.789l-687.456 0q-13.671 0 -22.46 8.789t-8.789 22.46l0 62.496zm62.496 593.712q0 25.389 18.553 43.943t43.943 18.553l499.968 0q25.389 0 43.943 -18.553t18.553 -43.943l0 -531.216l-624.96 0l0 531.216zm62.496 -31.248l0 -406.224q0 -13.671 8.789 -22.46t22.46 -8.789l62.496 0q13.671 0 22.46 8.789t8.789 22.46l0 406.224q0 13.671 -8.789 22.46t-22.46 8.789l-62.496 0q-13.671 0 -22.46 -8.789t-8.789 -22.46zm31.248 0l62.496 0l0 -406.224l-62.496 0l0 406.224zm31.248 -718.704l374.976 0l0 -31.248q0 -13.671 -8.789 -22.46t-22.46 -8.789l-312.48 0q-13.671 0 -22.46 8.789t-8.789 22.46l0 31.248zm124.992 718.704l0 -406.224q0 -13.671 8.789 -22.46t22.46 -8.789l62.496 0q13.671 0 22.46 8.789t8.789 22.46l0 406.224q0 13.671 -8.789 22.46t-22.46 8.789l-62.496 0q-13.671 0 -22.46 -8.789t-8.789 -22.46zm31.248 0l62.496 0l0 -406.224l-62.496 0l0 406.224zm156.24 0l0 -406.224q0 -13.671 8.789 -22.46t22.46 -8.789l62.496 0q13.671 0 22.46 8.789t8.789 22.46l0 406.224q0 13.671 -8.789 22.46t-22.46 8.789l-62.496 0q-13.671 0 -22.46 -8.789t-8.789 -22.46zm31.248 0l62.496 0l0 -406.224l-62.496 0l0 406.224z" />
+                </svg>
+            </div>
+            <div x-data="{
+                 modalOpen: false,
+                 isLoading: false,
+
+                 async openModalAndInitStripeForm() {
+                    this.modalOpen = true
+                    this.isLoading = true
+                    await initialize($store.cart.items)
+                    this.isLoading = false
+                    }
+                 }" class="flex flex-col md:flex-row">
+                <div x-show="modalOpen" class="absolute top-0 left-0 flex items-center justify-center w-full h-full" style="background-color: rgba(0,0,0,.5);">
+                    <!-- A basic modal dialog with title, body and one button to close -->
+                    <div x-on:click.away="modalOpen = false" class="h-auto p-4 mx-2 text-left bg-white rounded shadow-xl md:max-w-xl md:p-6 lg:p-8 md:mx-0">
+                        <div class="mt-3 text-center sm:mt-0 sm:text-left">
+                            <div x-show="isLoading" class="flex justify-center items-center">
+                                <div class="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full" role="status">
+                                </div>
+                            </div>
+                            <div x-show="!isLoading">
+                                <form x-on:submit.prevent="handleSubmit()" id="payment-form">
+                                    <div id="payment-element">
+                                        <!--Stripe.js injects the Payment Element-->
+                                    </div>
+                                    <button id="submit" class="w-full block text-center my-4 px-8 py-3 border border-gray-300 uppercase no-underline hover:border-gray-500 hover:text-black hover:underline hover:bg-gray-400 hover:bg-opacity-5 transition ease-in-out">
+                                        Pay now
+                                    </button>
+                                    <div id="payment-message" class="hidden"></div>
+                                </form>
+                                <div class="text-center text-red-700 font-bold">
+                                    <p>Please use following credit card for testing:</p>
+                                    <p><span class="underline">4242 4242 4242 4242 </span>with any expiration and CVC</p>
+                                </div>
+
+                            </div>
+                        </div>
+                        <!-- One big close button.  --->
+                        <div class="mt-5 sm:mt-6">
+                            <span class="flex w-full rounded-md shadow-sm">
+                                <button x-on:click="modalOpen = false" class="w-full block text-center my-4 px-8 py-3 border border-gray-500 uppercase no-underline hover:border-gray-800 hover:text-black hover:underline hover:bg-gray-400 hover:bg-opacity-5 transition ease-in-out">
+                                    Cancel
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full order-last md:w-3/5 md:order-first flow-root mx-auto">
+                    <div x-show="!$store.cart.items.length" class="mt-4 md:m-0 flex flex-row justify-center items-center md:h-full">
+                        <p class="text-gray-600 md:text-xl">Your cart is empty</p>
+                    </div>
+                    <ul role="list" class="my-2 divide-y divide-gray-200">
+                        <template x-for="cartItem in $store.cart.items" :key="cartItem.id">
+                            <li class="px-3 py-6 hover:bg-gray-300 hover:bg-opacity-10 cursor-pointer">
+                                <div class="flex flex-row">
+                                    <div x-on:click="document.location.pathname='/Shop/Product/' + cartItem.productId" class="w-3/12 flex flex-row items-center">
+                                        <div class="flex-shrink-0 self-center w-16 h-16 md:w-24 md:h-24 border border-gray-200 rounded-md overflow-hidden">
+                                            <img :src="cartItem.productThumbnail" :alt="cartItem.productName" class="w-full h-full object-center object-cover">
+                                        </div>
+                                        <p class="ml-2 font-bold md:text-lg" x-text="cartItem.productName"></p>
+                                    </div>
+                                    <div class="w-6/12 flex mr-4 justify-end self-center mt-1 select-none">
+                                        <button x-on:click="cartItem.quantity > 0 ? await $store.cart.updateQuantity(cartItem.productId, true) : cartItem.quantity" class="text-gray-500 focus:outline-none focus:text-gray-600">
+                                            <svg class="h-6 w-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        </button>
+                                        <span x-text="cartItem.quantity" class="w-4 md:w-8 text-gray-700 text-center mx-2 md:text-lg"></span>
+                                        <button x-on:click="cartItem.quantity < 99 ? await $store.cart.updateQuantity(cartItem.productId) : cartItem.quantity" class="text-gray-500 focus:outline-none focus:text-gray-600">
+                                            <svg class="h-6 w-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        </button>
+                                    </div>
+                                    <div class="w-3/12 flex flex-col items-end self-center">
+                                        <p x-text="'$' + Number.parseFloat(cartItem.totalPrice).toFixed(2)" class="md:text-lg"></p>
+                                        <p x-show="cartItem.quantity > 1" x-text="'$' + Number.parseFloat(cartItem.price).toFixed(2)" class="text-gray-400 text-xs font-normal"></p>
+                                    </div>
+                                </div>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+                <div class="w-full order-first md:order-last my-2 p-6 md:w-2/6 h-1/2 border border-gray-300">
+                    <div class="text-base text-2xl font-medium text-gray-900 text-center">
+                        <p class="my-2">Total</p>
+                        <p x-text="'$' + $store.cart.getPriceTotal()" class="font-bold my-2"></p>
+                    </div>
+                    <button x-on:click="openModalAndInitStripeForm()" x-bind:disabled="$store.cart.items.length" id="submit" :class="$store.cart.items.length ? 'hover:border-gray-500 hover:text-black hover:underline hover:bg-gray-400 hover:bg-opacity-5 transition ease-in-out' : 'text-gray-200 bg-gray-300 bg-opacity-10 cursor-default' " class="w-3/4 mx-auto md:m-0 md:w-full block text-center my-4 px-8 py-3 border border-gray-300 uppercase no-underline">
+                        Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+</section>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script defer>
+    // This is your test publishable API key.
+    const stripe = Stripe("pk_test_51JKj6YCXiSxnUOAuzJLUMe7S0GQ6LYWfFa7QqqGmfTqE4ixj00PerWKuSYSmvrtN1UaVePG36h6YtvliCDXMrdtx00RqjuKQUW");
+
+    let elements;
+
+    // Fetches a payment intent and captures the client secret
+    async function initialize(items) {
+
+        const response = await fetch("/api/create-payment-intent", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 'items': items }),
+        });
+        const { clientSecret } = await response.json();
+
+        const appearance = {
+            theme: 'stripe',
+        };
+        elements = stripe.elements({ appearance, clientSecret });
+
+        const paymentElement = elements.create("payment");
+        paymentElement.mount("#payment-element");
+    }
+
+    async function handleSubmit() {
+        const { error } = await stripe.confirmPayment({
+            elements,
+            confirmParams: {
+                // Make sure to change this to your payment completion page
+                return_url: `${window.location.protocol}//${window.location.hostname}${window.location.port ? ':' + window.location.port : ''}/`,
+            },
+        });
+
+        // This point will only be reached if there is an immediate error when
+        // confirming the payment. Otherwise, your customer will be redirected to
+        // your `return_url`. For some payment methods like iDEAL, your customer will
+        // be redirected to an intermediate site first to authorize the payment, then
+        // redirected to the `return_url`.
+        if (error.type === "card_error" || error.type === "validation_error") {
+            toastr.error(error.message);
+        } else {
+            toastr.error("An unexpected error occured.");
+        }
+    }
+</script>
