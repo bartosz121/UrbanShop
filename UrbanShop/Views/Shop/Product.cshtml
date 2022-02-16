@@ -1,0 +1,138 @@
+﻿@model UrbanShop.ViewModels.ProductPageViewModel
+
+@{
+    ViewData["Title"] = Model.product.Name;
+}
+
+<section class="bg-white py-8">
+    <main class="my-8">
+        <div class="container mx-auto px-6">
+            <div class="md:flex md:items-center">
+                <div class="w-full h-64 md:w-1/2 lg:h-96">
+                    <div x-data="imageSlider" class="bg-gray-100 h-full rounded-md max-w-2xl mx-auto relative p-2 sm:p-4 overflow-hidden">
+
+                        <div class="rounded-full bg-gray-600 text-white absolute top-5 right-5 text-sm px-2 text-center z-10">
+                            <span x-text="currentIndex"></span>/<span x-text="images.length"></span>
+                        </div>
+
+                        <button x-on:click="previous()"
+                                class="absolute left-5 top-1/2 -translate-y-1/2 bg-gray-100 rounded-full w-11 h-11 flex justify-center items-center shadow-md z-10">
+                            <svg class="w-8 h-8 font-bold text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7">
+                                </path>
+                            </svg>
+                        </button>
+
+                        <button x-on:click="forward()"
+                                class="absolute right-5 top-1/2 -translate-y-1/2 bg-gray-100 rounded-full w-11 h-11 flex justify-center items-center shadow-md z-10">
+                            <svg class="w-8 h-8 font-bold text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+
+                        <div class="relative h-full w-full">
+                            <template x-for="(image, index) in images">
+                                <div x-show="currentIndex == index + 1" x-transition:enter="transition transform duration-300"
+                                     x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                                     x-transition:leave="transition transform duration-300" x-transition:leave-start="opacity-100"
+                                     x-transition:leave-end="opacity-0" class="w-full h-full absolute top-0">
+                                    <img :src="image" alt="image" class="w-full h-full rounded-sm">
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+                <div x-data="{ itemCount: 1 }" class="w-full max-w-lg mx-auto mt-5 flex flex-col items-center justify-center md:ml-14 md:mt-0 md:w-1/2 md:items-start">
+                    <h3 class="text-gray-700 uppercase text-lg md:text-xl">@Model.product.Name</h3>
+                    <span class="text-gray-500 mt-3 md:text-lg">$@Model.product.Price</span>
+                    <hr class="my-3">
+                    <div class="mt-2">
+                        <label class="text-gray-700" for="count">Count:</label>
+                        <div class="flex items-center mt-1 select-none">
+                            <button x-on:click="itemCount > 1 ? itemCount-- : itemCount" class="text-gray-500 focus:outline-none focus:text-gray-600">
+                                <svg class="h-6 w-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </button>
+                            <span x-text="itemCount" class="text-gray-700 text-center w-4 text-lg mx-2"></span>
+                            <button x-on:click="itemCount < 99 ? itemCount++ : itemCount" class="text-gray-500 focus:outline-none focus:text-gray-600">
+                                <svg class="h-6 w-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center mt-6">
+                        <button x-on:click="$store.cart.addItem({ productId: @Model.product.Id, productName: '@Model.product.Name',  quantity: itemCount })" class="px-8 py-2 bg-white border border-gray-300 no-underline hover:underline hover:border-gray-500 hover:bg-gray-400 hover:bg-opacity-5 transition ease-in-out">Add to Cart</button>
+                        @*<button x-on:click="console.log($store.cart)" class="px-8 py-2 bg-white border border-gray-300 no-underline hover:underline hover:border-gray-500 hover:bg-gray-400 hover:bg-opacity-5 transition ease-in-out">log cart</button>
+                        <button x-on:click="$store.cart.showCart()" class="px-8 py-2 bg-white border border-gray-300 no-underline hover:underline hover:border-gray-500 hover:bg-gray-400 hover:bg-opacity-5 transition ease-in-out">showCart()</button>
+                        <button x-on:click="$store.cart.removeItem(@Model.product.Id)" class="px-8 py-2 bg-white border border-gray-300 no-underline hover:underline hover:border-gray-500 hover:bg-gray-400 hover:bg-opacity-5 transition ease-in-out">remove item</button>
+                        <button x-on:click="$store.cart.addOne(@Model.product.Id)" class="px-8 py-2 bg-white border border-gray-300 no-underline hover:underline hover:border-gray-500 hover:bg-gray-400 hover:bg-opacity-5 transition ease-in-out">addOne</button>
+                        <button x-on:click="$store.cart.removeOne(@Model.product.Id)" class="px-8 py-2 bg-white border border-gray-300 no-underline hover:underline hover:border-gray-500 hover:bg-gray-400 hover:bg-opacity-5 transition ease-in-out">removeOne</button>*@
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.relatedProducts.Count > 0)
+            {
+                <section class="bg-white py-8">
+                    <div class="container mx-auto flex items-center justify-evenly flex-wrap pt-4 pb-12">
+
+                        <nav id="store" class="w-full z-30 top-0 px-6 py-1">
+                            <div class="w-full container mx-auto flex flex-wrap items-center mt-0 px-2 py-3">
+                                <a class="pr-6 uppercase tracking-wide no-underline hover:no-underline font-bold text-gray-800 text-xl">
+                                    Related products
+                                </a>
+                            </div>
+                        </nav>
+
+                        @foreach (var product in Model.relatedProducts)
+                        {
+                            <div class="border border-gray-300 border-opacity-50 rounded-md shadow-md w-3/4 md:w-1/3 xl:w-24/100 p-6 m-1 flex flex-col items-center justify-around hover:grow hover:shadow-lg">
+                                <a asp-controller="Shop" asp-action="Product" asp-route-id="@product.Id">
+                                    <img class="" src="@product.GetThumbnailUrl()">
+                                </a>
+                                <div class="pt-3 w-full flex items-center justify-between">
+                                    <a asp-controller="Shop" asp-action="Product" asp-route-id="@product.Id">
+                                        <p class="product-name text-gray-900 text-lg font-bold">@product.Name</p>
+                                    </a>
+                                    <div class="flex flex-row items-center">
+                                        <p class="pt-1 text-gray-900 text-lg">$@product.Price</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </section>
+            }
+        </div>
+    </main>
+</section>
+
+<script>
+    var images = [];
+    @foreach (var d in Model.product.GetImagesUrls())
+    {
+        @:images.push("@d")
+    }
+
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('imageSlider', () => ({
+            currentIndex: 1,
+            images: images.reverse(),
+
+            previous() {
+                if (this.currentIndex > 1) {
+                    this.currentIndex = this.currentIndex - 1;
+                } else {
+                    this.currentIndex = this.images.length
+                }
+            },
+            forward() {
+                if (this.currentIndex < this.images.length) {
+                    this.currentIndex = this.currentIndex + 1;
+                } else {
+                    this.currentIndex = 1
+                }
+            }
+        }))
+    })
+</script>
