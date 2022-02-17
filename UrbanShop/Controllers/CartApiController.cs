@@ -85,7 +85,7 @@ namespace UrbanShop.Controllers
         // PUT: api/cart/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCartItem(int id, CartItem cartItem)
+        public async Task<ActionResult<CartItemApiModel>> PutCartItem(int id, CartItem cartItem)
         {
             if (id != cartItem.Id)
             {
@@ -110,7 +110,7 @@ namespace UrbanShop.Controllers
                 }
             }
 
-            return NoContent();
+            return await GetCartItem(cartItem.Id);
         }
 
         // POST: api/cart
@@ -131,7 +131,7 @@ namespace UrbanShop.Controllers
             _context.CartItem.Add(cartItem);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCartItem", new { id = cartItem.Id }, cartItem);
+            return await GetCartItem(cartItem.Id);
         }
 
         // DELETE: api/CartItems/5
@@ -149,22 +149,6 @@ namespace UrbanShop.Controllers
 
             return NoContent();
         }
-
-        //// DELETE: api/cart/user/5
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteUserCart(int userd)
-        //{
-        //    var cartItem = await _context.CartItem.FindAsync(id);
-        //    if (cartItem == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    _context.CartItem.Remove(cartItem);
-        //    await _context.SaveChangesAsync();
-
-        //    return NoContent();
-        //}
 
         private bool CartItemExists(int id)
         {
