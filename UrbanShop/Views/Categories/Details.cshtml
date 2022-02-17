@@ -32,6 +32,9 @@
 
     <div class="text-center mb-4 flex flex-col sm:flex-row justify-center gap-4">
         <div class="border border-gray-300 hover:border-gray-500 transition ease-in-out">
+            <a asp-controller="Shop" asp-action="Category" asp-route-id="@Model.Id" class="inline-block no-underline hover:text-black hover:underline py-2 px-4 uppercase">Category page</a>
+        </div>
+        <div class="border border-gray-300 hover:border-gray-500 transition ease-in-out">
             <a asp-action="Edit" asp-route-id="@Model.Id" class="inline-block py-2 px-4 uppercase no-underline hover:text-black hover:underline hover:bg-gray-400 hover:bg-opacity-5">Edit</a>
         </div>
         <div class="border border-gray-300 hover:border-gray-500 transition ease-in-out">
