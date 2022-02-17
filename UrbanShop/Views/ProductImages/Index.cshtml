@@ -40,6 +40,7 @@
                         @Html.DisplayFor(modelItem => item.ImageUrl)
                     </td>
                     <td>
+                        <a asp-controller="Shop" asp-action="Product" asp-route-id="@item.ProductId">Product page</a> |
                         <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                         <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                     </td>
