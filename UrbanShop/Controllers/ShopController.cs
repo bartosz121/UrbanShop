@@ -72,7 +72,7 @@ namespace UrbanShop.Controllers
             }
 
             var relatedProducts = await _context.Products
-                .Where(p => p.Id != id && p.CategoryId == product.CategoryId)
+                .Where(p => p.Id != id && p.IsVisible && p.CategoryId == product.CategoryId)
                 .Include(p => p.ProductImages.Take(1)).Take(4)
                 .AsSplitQuery().ToListAsync();
 
