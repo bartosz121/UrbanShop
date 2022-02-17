@@ -31,23 +31,21 @@
 
                 async init() {
                     if (isSignedIn) {
-                        try {
-                            userCart = await this.getUserCart()
-                            this.items = userCart
-                            this.itemCount = this.items.length
-                        } catch (err) {
-                            toastr.error(err)
-                        }
+                        await this.getUserCart()
                     }
                 },
 
                 async getUserCart() {
-                    const response = await fetch("/api/cart/user/@userManager.GetUserId(User)")
-                    if (response.ok) {
-                        data = await response.json()
-                        return data
-                    }
-                    throw new Error("Could not get your cart data.")
+                    await fetch("/api/cart/user/@userManager.GetUserId(User)")
+                        .then(response => response.json())
+                        .then(data => {
+                            this.items = data
+                            this.itemCount = data.length
+                        })
+                        .catch(err => {
+                            toastr.error(err)
+                            throw new Error("Could not get your cart data.")
+                        })
                 },
 
                 getPriceTotal() {
@@ -59,7 +57,7 @@
 
                 async addItem(itemToAdd) {
                     if (isSignedIn) {
-                        response = await fetch("/api/cart/", {
+                        await fetch("/api/cart/", {
                             method: "POST",
                             headers: {
                                 'Content-Type': 'application/json'
@@ -69,19 +67,12 @@
                                 "ProductId": itemToAdd.productId,
                                 "Quantity": itemToAdd.quantity
                             })
-                        })
-                        if (response.ok) {
-                            try {
-                                userCart = await this.getUserCart()
-                                this.items = userCart
-                                this.itemCount = this.items.length
+                        }).then(response => response.json())
+                            .then(async() => {
+                                await this.getUserCart()
                                 toastr.success(`${itemToAdd.productName} x${itemToAdd.quantity} added to cart!`)
-                            } catch (err) {
-                                toastr.error(err)
-                            }
-                        } else {
-                            toastr.error("Error adding product to cart.")
-                        }
+                            })
+                            .catch(err => toastr.error(err))
                     } else {
                         window.location = `/Identity/Account/Login?ReturnUrl=/Shop/Product/${itemToAdd.productId}`
                     }
@@ -90,22 +81,13 @@
                 async removeItem(productId) {
                     if (isSignedIn) {
                         item = this.items.find(i => i.productId === productId)
-                        response = await fetch(`/api/cart/${item.id}`, {
+                        productName = item.productName
+                        await fetch(`/api/cart/${item.id}`, {
                             method: 'DELETE'
-                        })
+                        }).catch(err => toastr.error(`Error while removing item: ${err}`))
 
-                        if (response.ok) {
-                            try {
-                                userCart = await this.getUserCart()
-                                toastr.info(`${item.productName} removed from cart.`)
-                                this.items = userCart
-                                this.itemCount = this.items.length
-                            } catch (err) {
-                                toastr.error(err)
-                            }
-                        } else {
-                            toastr.error(`Error removing ${item.productName}(x${item.quantity}) from cart.`)
-                        }
+                        await this.getUserCart()
+                        toastr.info('Item removed from cart.')
                     }
                 },
 
@@ -124,7 +106,7 @@
                             }
                         }
 
-                        response = await fetch(`/api/cart/${item.id}`, {
+                        await fetch(`/api/cart/${item.id}`, {
                             method: "PUT",
                             headers: {
                                 'Content-Type': 'application/json'
@@ -135,35 +117,21 @@
                                 "ProductId": item.productId,
                                 "Quantity": newQuantity
                             })
-                        })
-                        if (response.ok) {
-                            try {
-                                userCart = await this.getUserCart()
-                                this.items = userCart
-                                this.itemCount = this.items.length
-                            } catch (err) {
-                                toastr.error(err)
-                            }
-                        } else {
-                            toastr.error(`Error removing ${item.productName}(x1) from cart.`)
-                        }
+                        }).then(response => response.json())
+                            .then(async(data) => {
+                                await this.getUserCart()
+                            })
+                            .catch(err => toastr.error(err))
                     }
                 },
 
                 async clearCart(alert = false) {
                     if (isSignedIn) {
-                        for (let i = 0; i < this.items.length; i++) {
-                            item = this.items[i]
-                            await this.removeItem(i.productId)
-                        }
+                        this.items.forEach(async (item) => {
+                            this.removeItem(item.productId)
+                        })
 
-                        try {
-                            userCart = await this.getUserCart()
-                            this.items = userCart
-                            this.itemCount = this.items.length
-                        } catch (err) {
-                            toastr.error(err)
-                        }
+                        await this.getUserCart()
 
                         if (alert) {
                             toastr.info('Your cart has been cleared.')
@@ -260,11 +228,13 @@
             </div>
 
             <div class="socials py-16 lg:py-0 text-center">
-                <div class="mb-4">Logo here</div>
-                <div class="socials-wrapper flex items-center justify-center gap-4">
-                    <div class="fb">FB</div>
-                    <div class="twitter">TW</div>
-                    <div class="instagram">IN</div>
+                <div class="socials-wrapper flex items-center justify-center gap-8">
+                    @*<a href="https://www.flaticon.com/free-icons/twitter" title="twitter icons">Twitter icons created by Freepik - Flaticon</a>*@
+                    @*<a href="https://www.flaticon.com/free-icons/facebook" title="facebook icons">Facebook icons created by Freepik - Flaticon</a>*@
+                    @*<a href="https://www.flaticon.com/free-icons/instagram" title="instagram icons">Instagram icons created by Pixel perfect - Flaticon</a>*@
+                    <div class="twitter z-10 cursor-pointer transform transition duration-500 hover:scale-125"><a href="https://twitter.com"><img style="width:32px;" src="/images/twitter.png" alt="twitter icon" /></a></div>
+                    <div class="fb z-10 cursor-pointer transform transition duration-500 hover:scale-125"><a href="https://facebook.com"><img style="width:32px;" src="/images/facebook.png" alt="twitter icon" /></a></div>
+                    <div class="instagram z-10 cursor-pointer transform transition duration-500 hover:scale-125"><a href="https://instagram.com"><img style="width:32px;" src="/images/instagram.png" alt="twitter icon" /></a></div>
                 </div>
             </div>
 
